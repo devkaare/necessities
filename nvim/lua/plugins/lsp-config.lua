@@ -19,21 +19,22 @@ return {
         config = function()
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
             local lspconfig = require("lspconfig")
+
             lspconfig.tsserver.setup({ capabilities = capabilities })
-            lspconfig.solargraph.setup({
+            lspconfig.solargraph.setup({ capabilities = capabilities })
+            lspconfig.html.setup({ capabilities = capabilities })
+            lspconfig.lua_ls.setup({ capabilities = capabilities })
+            lspconfig.rust_analyzer.setup({ capabilities = capabilities })
+            lspconfig.gopls.setup({
                 capabilities = capabilities,
-            })
-            lspconfig.html.setup({
-                capabilities = capabilities,
-            })
-            lspconfig.lua_ls.setup({
-                capabilities = capabilities,
-            })
-            lspconfig.rust_analyzer.setup({
-                capabilities = capabilities,
-            })
-            lspconfig.golangci_lint_ls.setup({
-                capabilities = capabilities,
+                settings = {
+                    gopls = {
+                        analyses = {
+                            unusedparams = true,
+                        },
+                        staticcheck = true,
+                    },
+                },
             })
 
             vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
@@ -41,31 +42,57 @@ return {
             vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, {})
             vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
 
-            -- Customize diagnostic display
             vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
                 vim.lsp.diagnostic.on_publish_diagnostics, {
-                    -- Enable underline, use default values
                     underline = true,
-                    -- Enable virtual text, override spacing to 4
                     virtual_text = {
                         spacing = 4,
                         prefix = '~',
                     },
-                    -- Use a function to dynamically turn signs off
-                    -- and on, using buffer local variables
                     signs = function(bufnr, client_id)
                         local ok, result = pcall(vim.api.nvim_buf_get_var, bufnr, 'show_signs')
-                        -- No buffer local variable set, so just enable by default
                         if not ok then
                             return true
                         end
-
                         return result
                     end,
-                    -- Disable a feature
                     update_in_insert = false,
                 }
             )
+        end,
+    },
+    {
+        "hrsh7th/nvim-cmp",
+        lazy = false,
+        requires = {
+            "hrsh7th/cmp-nvim-lsp",
+            "hrsh7th/cmp-buffer",
+            "hrsh7th/cmp-path",
+            "saadparwaiz1/cmp_luasnip",
+            "L3MON4D3/LuaSnip",
+        },
+        config = function()
+            local cmp = require'cmp'
+            cmp.setup({
+                snippet = {
+                    expand = function(args)
+                        require('luasnip').lsp_expand(args.body)
+                    end,
+                },
+                mapping = {
+                    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+                    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+                    ['<C-Space>'] = cmp.mapping.complete(),
+                    ['<C-e>'] = cmp.mapping.abort(),
+                    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+                },
+                sources = cmp.config.sources({
+                    { name = 'nvim_lsp' },
+                    { name = 'luasnip' },
+                }, {
+                    { name = 'buffer' },
+                })
+            })
         end,
     },
 }
