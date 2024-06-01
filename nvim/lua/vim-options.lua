@@ -1,6 +1,7 @@
 -- Key mappings
 vim.api.nvim_set_keymap('i', 'jj', '<Esc>', { noremap = true })
-vim.api.nvim_set_keymap('n', '<C-w>', ':set wrap!<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<space>e', '<cmd>lua vim.diagnostic.open_float()<CR>', {})
+
 
 -- Display settings
 vim.opt.number = true
@@ -9,12 +10,6 @@ vim.opt.signcolumn = "number"
 vim.opt.scrolloff = 8
 vim.opt.termguicolors = true
 vim.opt.wrap = false
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "*",
-  callback = function()
-    vim.opt_local.formatoptions:remove({ 'r', 'o' })
-  end,
-})
 
 -- Indentation settings
 vim.cmd("set expandtab")
@@ -30,3 +25,4 @@ vim.opt.updatetime = 50
 
 -- Clipboard settings
 vim.cmd("set clipboard+=unnamedplus")
+
