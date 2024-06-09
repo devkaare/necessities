@@ -70,6 +70,7 @@ return {
             "hrsh7th/cmp-path",
             "saadparwaiz1/cmp_luasnip",
             "L3MON4D3/LuaSnip",
+            "rafamadriz/friendly-snippets",
         },
         config = function()
             local cmp = require'cmp'
@@ -93,6 +94,20 @@ return {
                     { name = 'buffer' },
                 })
             })
+
+            -- Load friendly-snippets
+            require("luasnip.loaders.from_vscode").lazy_load()
+        end,
+    },
+    -- LuaSnip configuration
+    {
+        "L3MON4D3/LuaSnip",
+        lazy = false,
+        requires = {
+            "rafamadriz/friendly-snippets"
+        },
+        config = function()
+            require("luasnip.loaders.from_vscode").lazy_load()
         end,
     },
 }
